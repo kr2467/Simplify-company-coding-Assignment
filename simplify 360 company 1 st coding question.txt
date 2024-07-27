@@ -1,0 +1,105 @@
+1 question
+We have a large and complex workflow, made of tasks. And have to decide who does what, when, so it all gets done on time.
+
+All tasks have dependency on other tasks to complete
+
+Each task(t) has a
+
+D[t] = duration of task
+
+EFT [t] = the earliest finish time for a task
+
+LFT [t] = the latest finish time for a task
+
+EST [t] = the earliest start time for a task
+
+LST [t] = the last start time for a task
+
+Assume
+
+that "clock" starts at 0 (project starting time).
+
+We are given the starting task T_START where the EST [t] = 0 and LST [t] = 0 Java/Python/JS/Typescript console application to answer the following questions
+
+You have to write an Earliest time all the tasks will be completed?
+
+Latest time all tasks will be completed?
+////////Approach:
+
+
+class Task:
+    def __init__(self, id, duration, dependencies):
+        self.id = id
+        self.duration = duration
+        self.dependencies = dependencies
+        self.EST = 0
+        self.EFT = 0
+        self.LST = 0
+        self.LFT = 0
+
+def calculate_EFT(tasks):
+    """
+    Calculates the Earliest Finish Time (EFT) for each task.
+
+    Time Complexity: O(T * D)
+    - T is the number of tasks.
+    - D is the average number of dependencies per task.
+      Each task requires a scan of its dependencies to compute EST, 
+      and finding the maximum of these dependencies.
+
+    Space Complexity: O(1)
+    - No additional space is used beyond task attributes.
+    """
+    for task in tasks.values():
+        if task.dependencies:
+            task.EST = max(tasks[d].EFT for d in task.dependencies)
+        task.EFT = task.EST + task.duration
+
+def calculate_LFT(tasks, max_EFT):
+    """
+    Calculates the Latest Finish Time (LFT) for each task.
+
+    Time Complexity: O(T * D)
+    - T is the number of tasks.
+    - D is the average number of dependencies per task.
+      Each task requires a scan of its dependencies to compute LFT,
+      and finding the minimum of these dependencies.
+
+    Space Complexity: O(1)
+    - No additional space is used beyond task attributes.
+    """
+    for task in tasks.values():
+        if not task.dependencies:
+            task.LFT = max_EFT
+        else:
+            task.LFT = min(tasks[d].EST for d in task.dependencies if d in tasks)
+        task.LST = task.LFT - task.duration
+
+def calculate_completion_times(tasks):
+    """
+    Calculates the earliest and latest completion times for all tasks.
+
+    Time Complexity: O(T * D)
+    - T is the number of tasks.
+    - D is the average number of dependencies per task.
+      This involves calculating EFT and LFT for all tasks.
+
+    Space Complexity: O(1)
+    - No additional space is used beyond task attributes.
+    """
+    calculate_EFT(tasks)
+    max_EFT = max(task.EFT for task in tasks.values())
+    calculate_LFT(tasks, max_EFT)
+    return max_EFT
+
+tasks = {
+    'T1': Task('T1', 3, []),
+    'T2': Task('T2', 2, ['T1']),
+    'T3': Task('T3', 4, ['T1']),
+    'T4': Task('T4', 2, ['T2', 'T3']),
+    'T5': Task('T5', 3, ['T3']),
+    'T6': Task('T6', 1, ['T4', 'T5']),
+}
+
+print("Earliest completion time:", calculate_completion_times(tasks))
+print("Latest completion time:", max(task.LFT for task in tasks.values()))

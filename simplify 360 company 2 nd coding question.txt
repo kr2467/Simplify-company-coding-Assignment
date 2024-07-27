@@ -1,0 +1,70 @@
+Question 2:
+
+Both Alice & Bob have friends. Create a Java/Python/JS/Typescript console application to find all the friends of Alice and all the friends
+
+of Bob & common friends of Alice and Bob. Your algorithm should be able to do the following:
+
+Take any 2 friends and find the common friends between the 2 friends
+
+Take any 2 friends find the nth connection for example: connection (Alice, Janice) => 2
+
+Alice has friend Bob and Bob has friend Janice, if the input given is Alice and Janice the output should be 2, meaning 2nd connection, that means Janice is the second connection of Alice and Bob being the 1st connection of Alice.
+
+Likewise if input given is Alice and Bob, the output should be 1, for 1st connection
+
+//Approach:- 
+
+
+class Person:
+    def __init__(self, name):
+        self.name = name
+        self.friends = []
+
+    def add_friend(self, person):
+        self.friends.append(person)
+
+def common_friends(person1, person2):
+    """
+    Returns the common friends between person1 and person2.
+
+    Time Complexity: O(n_1 + n_2 + min(n_1, n_2))
+    - O(n_1) for converting person1's friends list to a set.
+    - O(n_2) for converting person2's friends list to a set.
+    - O(min(n_1, n_2)) for finding the intersection of the two sets.
+
+    Space Complexity: O(n_1 + n_2)
+    - O(n_1) for storing person1's friends in a set.
+    - O(n_2) for storing person2's friends in a set.
+    - The intersection result uses space proportional to the number of common friends.
+    """
+    return set(person1.friends).intersection(set(person2.friends))
+
+def connection_level(person1, person2, level=1):
+    """
+    Finds the connection level between person1 and person2 using recursion.
+
+    Time Complexity: O(n)
+    - In the worst case, the function may visit every friend in the network.
+
+    Space Complexity: O(n)
+    - Due to recursion, the space complexity depends on the depth of the call stack,
+      which can be up to O(n) in the worst case.
+    """
+    if person2 in person1.friends:
+        return level
+    for friend in person1.friends:
+        result = connection_level(friend, person2, level + 1)
+        if result != -1:
+            return result
+    return -1
+
+# Example usage
+Alice = Person('Alice')
+Bob = Person('Bob')
+Janice = Person('Janice')
+
+Alice.add_friend(Bob)
+Bob.add_friend(Janice)
+
+print("Common friends:", common_friends(Alice, Bob))
+print("Connection level:", connection_level(Alice, Janice))
